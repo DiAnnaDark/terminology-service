@@ -3,12 +3,10 @@
 from datetime import date
 
 from django.contrib.auth import get_user_model
-from django.contrib.admin.sites import site
 from django.db import connection
 from django.test import TestCase
 from django.test.utils import CaptureQueriesContext
 
-from refbooks.admin import RefbookAdmin, RefbookElementAdmin, RefbookVersionAdmin
 from refbooks.models import Refbook, RefbookElement, RefbookVersion
 
 
