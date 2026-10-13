@@ -17,10 +17,10 @@ class NPlusOneTests(TestCase):
             username="query-audit-admin", password="local-test-only-password"
         )
 
-    def query_count(self, callback):
+    def capture_queries(self, callback):
         with CaptureQueriesContext(connection) as queries:
             callback()
-        return len(queries)
+        return list(queries.captured_queries)
 
     def add_records(self, start, stop):
         for index in range(start, stop):
@@ -36,9 +36,23 @@ class NPlusOneTests(TestCase):
 
     def assert_query_count_does_not_scale(self, callback):
         self.add_records(0, 2)
-        small = self.query_count(callback)
+        small_queries = self.capture_queries(callback)
         self.add_records(2, 42)
-        large = self.query_count(callback)
+        large_queries = self.capture_queries(callback)
+        small, large = len(small_queries), len(large_queries)
+        print(
+            f"\\n{self._testMethodName}: "
+            f"2 records = {small} SQL queries; "
+            f"42 records = {large} SQL queries",
+            flush=True,
+        )
+        if self._testMethodName == "test_refbook_list_api_query_count":
+            selects = [
+                entry["sql"] for entry in large_queries
+                if entry["sql"].lstrip().upper().startswith("SELECT")
+            ]
+            if selects:
+                print(f"Example SQL (42 records):\\n{selects[0]}", flush=True)
         self.assertLessEqual(
             large, small,
             f"N+1 suspected: 2 records used {small} SQL queries, "
