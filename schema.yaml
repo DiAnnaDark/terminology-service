@@ -1,0 +1,251 @@
+openapi: 3.0.3
+info:
+  title: Сервис терминологии
+  version: 1.0.0
+  description: Чтение справочников и точная проверка элементов. Запись через русскую
+    Django Admin.
+paths:
+  /refbooks/:
+    get:
+      operationId: refbooks_retrieve
+      description: GET /refbooks/?date=2022-10-01. Без date возвращаются все справочники.
+        С date — только имеющие хотя бы одну версию с датой начала <= date. Версии
+        без даты не учитываются.
+      summary: Список справочников
+      parameters:
+      - in: query
+        name: date
+        schema:
+          type: string
+          minLength: 1
+          pattern: ^\d{4}-\d{2}-\d{2}$
+        description: Дата ГГГГ-ММ-ДД; например 2022-10-01.
+      tags:
+      - refbooks
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RefbookList'
+              examples:
+                Список:
+                  value:
+                    refbooks:
+                    - id: '1'
+                      code: MS1
+                      name: Специальности медицинских работников
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QueryError'
+          description: ''
+  /refbooks/{id}/check_element:
+    get:
+      operationId: refbooks_check_element_retrieve
+      description: 'GET /refbooks/1/check_element?code=1&value=Врач-терапевт&version=1.0.
+        Код и значение должны совпасть у одного элемента выбранной версии. Сравнение
+        точное: регистр и пробелы значимы. Отсутствие элемента — 200 и valid=false;
+        отсутствие справочника/версии — 404.'
+      summary: Проверка элемента
+      parameters:
+      - in: query
+        name: code
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 100
+        description: Код элемента, например J00.
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      - in: query
+        name: value
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 300
+        description: Точное значение элемента.
+        required: true
+      - in: query
+        name: version
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 50
+        description: Например 1.0. Без параметра выбирается текущая версия на сегодняшнюю
+          дату.
+      tags:
+      - refbooks
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CheckResult'
+              examples:
+                Найден:
+                  value:
+                    valid: true
+                НеНайден:
+                  value:
+                    valid: false
+                  summary: Не найден
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QueryError'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+          description: ''
+  /refbooks/{id}/elements:
+    get:
+      operationId: refbooks_elements_retrieve
+      description: GET /refbooks/1/elements?version=1.0. Без version выбирается последняя
+        вступившая в силу версия (дата <= сегодня, Europe/Moscow). Явно можно запросить
+        любую существующую версию, включая будущую и без даты. Пустая существующая
+        версия возвращает пустой список.
+      summary: Элементы справочника
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      - in: query
+        name: version
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 50
+        description: Например 1.0. Без параметра выбирается текущая версия на сегодняшнюю
+          дату.
+      tags:
+      - refbooks
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ElementList'
+              examples:
+                Элементы:
+                  value:
+                    elements:
+                    - code: '1'
+                      value: Врач-терапевт
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QueryError'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+          description: ''
+components:
+  schemas:
+    CheckResult:
+      type: object
+      properties:
+        valid:
+          type: boolean
+      required:
+      - valid
+    Element:
+      type: object
+      properties:
+        code:
+          type: string
+          title: Код элемента
+          maxLength: 100
+        value:
+          type: string
+          title: Значение элемента
+          maxLength: 300
+      required:
+      - code
+      - value
+    ElementList:
+      type: object
+      properties:
+        elements:
+          type: array
+          items:
+            $ref: '#/components/schemas/Element'
+      required:
+      - elements
+    NotFound:
+      type: object
+      properties:
+        detail:
+          type: string
+      required:
+      - detail
+    QueryError:
+      type: object
+      properties:
+        date:
+          type: array
+          items:
+            type: string
+        version:
+          type: array
+          items:
+            type: string
+        code:
+          type: array
+          items:
+            type: string
+        value:
+          type: array
+          items:
+            type: string
+    Refbook:
+      type: object
+      properties:
+        id:
+          type: string
+          readOnly: true
+        code:
+          type: string
+          title: Код
+          maxLength: 100
+        name:
+          type: string
+          title: Наименование
+          maxLength: 300
+      required:
+      - code
+      - id
+      - name
+    RefbookList:
+      type: object
+      properties:
+        refbooks:
+          type: array
+          items:
+            $ref: '#/components/schemas/Refbook'
+      required:
+      - refbooks
