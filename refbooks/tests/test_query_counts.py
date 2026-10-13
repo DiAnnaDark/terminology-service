@@ -41,7 +41,7 @@ class NPlusOneTests(TestCase):
         large_queries = self.capture_queries(callback)
         small, large = len(small_queries), len(large_queries)
         print(
-            f"\\n{self._testMethodName}: "
+            f"\n{self._testMethodName}: "
             f"2 records = {small} SQL queries; "
             f"42 records = {large} SQL queries",
             flush=True,
@@ -52,7 +52,7 @@ class NPlusOneTests(TestCase):
                 if entry["sql"].lstrip().upper().startswith("SELECT")
             ]
             if selects:
-                print(f"Example SQL (42 records):\\n{selects[0]}", flush=True)
+                print(f"Example SQL (42 records):\n{selects[0]}", flush=True)
         self.assertLessEqual(
             large, small,
             f"N+1 suspected: 2 records used {small} SQL queries, "
