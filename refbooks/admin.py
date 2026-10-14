@@ -19,6 +19,7 @@ class ElementInline(admin.TabularInline):
 class RefbookAdmin(admin.ModelAdmin):
     list_display = ("id", "code", "name", "current_version", "current_date")
     search_fields = ("code", "name")
+    list_display_links = ("id", "name")
     inlines = (VersionInline,)
 
     def get_queryset(self, request):
