@@ -97,6 +97,16 @@ class AdminWriteTests(TestCase):
         element.refresh_from_db()
         self.assertEqual(element.value, "Врач-терапевт")
 
+    def test_refbook_name_is_a_change_link(self):
+        book = Refbook.objects.create(code="LINK-TEST", name="Открываемое название")
+        response = self.client.get("/admin/refbooks/refbook/")
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(
+            response,
+            f'<a href="/admin/refbooks/refbook/{book.pk}/change/">Открываемое название</a>',
+            html=True,
+        )
+
     def test_duplicate_refbook_code_is_rejected_by_admin(self):
         Refbook.objects.create(code="MS1", name="Первый")
         response = self.client.post("/admin/refbooks/refbook/add/", {
