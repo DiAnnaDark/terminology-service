@@ -53,10 +53,14 @@
       if (heading && heading.textContent.trim() === "Удалить") {
         var paragraph = document.querySelector("#content > p");
         if (paragraph && paragraph.textContent.includes("удалить Версия справочника")) {
-          paragraph.textContent = paragraph.textContent.replace(
-            "удалить Версия справочника",
-            "удалить версию справочника"
-          );
+          Array.from(paragraph.childNodes).forEach(function (node) {
+            if (node.nodeType === 3 && node.nodeValue.includes("удалить Версия справочника")) {
+              node.nodeValue = node.nodeValue.replace(
+                "удалить Версия справочника",
+                "удалить версию справочника"
+              );
+            }
+          });
         }
       }
     }
