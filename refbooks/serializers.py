@@ -38,6 +38,10 @@ class CheckResultSerializer(serializers.Serializer):
 class NotFoundSerializer(serializers.Serializer):
     detail = serializers.CharField()
 
+class DateQueryErrorSerializer(serializers.Serializer):
+    date = serializers.ListField(child=serializers.CharField())
+
+
 class QueryErrorSerializer(serializers.Serializer):
     date = serializers.ListField(child=serializers.CharField(), required=False)
     version = serializers.ListField(child=serializers.CharField(), required=False)

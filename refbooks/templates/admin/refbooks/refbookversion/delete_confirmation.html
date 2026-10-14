@@ -1,0 +1,6 @@
+{% extends "admin/delete_confirmation.html" %}
+{% load static %}
+{% block extrahead %}
+{{ block.super }}
+<script src="{% static 'refbooks/admin_labels.js' %}" defer></script>
+{% endblock %}

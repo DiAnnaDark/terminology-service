@@ -119,6 +119,13 @@ class APITests(TestCase):
                 with self.subTest(path=path, method=method):
                     self.assertEqual(getattr(self.client, method)(path, {}, format='json').status_code, 405)
 
+    def test_refbook_list_400_schema_is_date_only(self):
+        schema = self.client.get('/api/schema/?format=json').json()
+        error = schema['paths']['/refbooks/']['get']['responses']['400']
+        reference = error['content']['application/json']['schema']['$ref']
+        component = schema['components']['schemas'][reference.rsplit('/', 1)[-1]]
+        self.assertEqual(set(component['properties']), {'date'})
+
     def test_schema_and_swagger(self):
         response = self.client.get('/api/schema/?format=json')
         self.assertEqual(response.status_code, 200)

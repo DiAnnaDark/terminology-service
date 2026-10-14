@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from .models import Refbook, RefbookVersion
 from .serializers import (CheckQuerySerializer, CheckResultSerializer, ElementListSerializer,
-    ElementSerializer, ListQuerySerializer, NotFoundSerializer, QueryErrorSerializer,
+    ElementSerializer, ListQuerySerializer, NotFoundSerializer, QueryErrorSerializer, DateQueryErrorSerializer,
     RefbookListSerializer, RefbookSerializer, VersionQuerySerializer)
 
 
@@ -33,7 +33,7 @@ class RefbookListView(APIView):
     @extend_schema(
         summary="Список справочников", parameters=[ListQuerySerializer],
         description="GET /refbooks/?date=2022-10-01. Без date возвращаются все справочники. С date — только имеющие хотя бы одну версию с датой начала <= date. Версии без даты не учитываются.",
-        responses={200: RefbookListSerializer, 400: QueryErrorSerializer},
+        responses={200: RefbookListSerializer, 400: DateQueryErrorSerializer},
         examples=[OpenApiExample("Список", value={"refbooks": [{"id": "1", "code": "MS1", "name": "Специальности медицинских работников"}]}, response_only=True)],
     )
     def get(self, request):

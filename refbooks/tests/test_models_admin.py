@@ -71,6 +71,15 @@ class AdminTests(TestCase):
         self.assertContains(self.client.get(f'/admin/refbooks/refbookversion/{self.version.pk}/change/'), 'elements-TOTAL_FORMS')
         self.assertContains(self.client.get('/admin/'), 'Сервис терминологии')
 
+    def test_label_corrections_loaded_only_in_admin(self):
+        book = self.client.get(f'/admin/refbooks/refbook/{self.book.pk}/change/')
+        version = self.client.get(f'/admin/refbooks/refbookversion/{self.version.pk}/change/')
+        delete = self.client.get(f'/admin/refbooks/refbookversion/{self.version.pk}/delete/')
+        for response in (book, version, delete):
+            self.assertEqual(response.status_code, 200)
+            self.assertContains(response, 'refbooks/admin_labels.js')
+        self.assertNotContains(self.client.get('/refbooks/'), 'admin_labels.js')
+
     def test_admin_requires_login(self):
         self.client.logout()
         self.assertEqual(self.client.get('/admin/refbooks/refbook/').status_code, 302)
