@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.db.models import OuterRef, Subquery
 from .models import Refbook, RefbookElement, RefbookVersion
+from .admin_forms import RefbookAdminForm, VersionInlineFormSet, ElementInlineFormSet
 
 admin.site.site_header = "Сервис терминологии"
 admin.site.site_title = "Сервис терминологии"
@@ -8,15 +9,18 @@ admin.site.index_title = "Управление справочниками"
 
 class VersionInline(admin.TabularInline):
     model = RefbookVersion
+    formset = VersionInlineFormSet
     extra = 0
     show_change_link = True
 
 class ElementInline(admin.TabularInline):
     model = RefbookElement
+    formset = ElementInlineFormSet
     extra = 0
 
 @admin.register(Refbook)
 class RefbookAdmin(admin.ModelAdmin):
+    form = RefbookAdminForm
     list_display = ("id", "code", "name", "current_version", "current_date")
     search_fields = ("code", "name")
     list_display_links = ("id", "name")
