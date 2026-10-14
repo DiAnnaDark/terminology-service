@@ -26,6 +26,9 @@ class RefbookAdmin(admin.ModelAdmin):
     list_display_links = ("id", "name")
     inlines = (VersionInline,)
 
+    class Media:
+        js = ("refbooks/admin_labels.js",)
+
     def get_queryset(self, request):
         current = RefbookVersion.objects.filter(refbook_id=OuterRef("pk")).effective_on()
         return super().get_queryset(request).annotate(
@@ -48,6 +51,10 @@ class RefbookVersionAdmin(admin.ModelAdmin):
     search_fields = ("refbook__code", "refbook__name", "version")
     autocomplete_fields = ("refbook",)
     inlines = (ElementInline,)
+    delete_confirmation_template = "admin/refbooks/refbookversion/delete_confirmation.html"
+
+    class Media:
+        js = ("refbooks/admin_labels.js",)
 
     @admin.display(description="Код справочника", ordering="refbook__code")
     def refbook_code(self, obj):
