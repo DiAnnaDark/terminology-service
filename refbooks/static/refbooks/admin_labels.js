@@ -6,7 +6,7 @@
 
   function replaceText(root, selector, before, after) {
     root.querySelectorAll(selector).forEach(function (node) {
-      if (node.textContent.trim() === before) {
+      if (node.textContent.trim().replace(/ё/g, "е") === before.replace(/ё/g, "е")) {
         node.textContent = after;
       }
     });
@@ -20,7 +20,7 @@
     if (!data) return;
     try {
       var config = JSON.parse(data);
-      if (config.options && config.options.addText === before) {
+      if (config.options && typeof config.options.addText === "string" && config.options.addText.replace(/ё/g, "е") === before.replace(/ё/g, "е")) {
         config.options.addText = after;
         group.setAttribute("data-inline-formset", JSON.stringify(config));
       }
@@ -33,12 +33,12 @@
     updateInline(
       "versions-group",
       "Добавить ещё один Версия справочника",
-      "Добавить еще одну версию справочника"
+      "Добавить еще одну Версию справочника"
     );
     updateInline(
       "elements-group",
       "Добавить ещё один Элемент справочника",
-      "Добавить еще один элемент справочника"
+      "Добавить еще один Элемент справочника"
     );
     replaceText(
       document,
