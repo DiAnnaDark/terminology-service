@@ -65,7 +65,7 @@ class AdminLocalizationTests(TestCase):
         )
         self.assertEqual(response.status_code, 200)
         self.assertContains(
-            response, 'Пожалуйста, измените повторяющееся значение в поле "версия".'
+            response, 'Пожалуйста, измените повторяющееся значение в поле &quot;версия&quot;.'
         )
         self.assertEqual(self.book.versions.count(), 1)
 
@@ -89,7 +89,7 @@ class AdminLocalizationTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(
             response,
-            'Пожалуйста, измените повторяющееся значение в поле "дата начала действия".',
+            'Пожалуйста, измените повторяющееся значение в поле &quot;дата начала действия&quot;.',
         )
         self.assertEqual(self.book.versions.count(), 1)
 
@@ -114,6 +114,6 @@ class AdminLocalizationTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(
             response,
-            'Пожалуйста, измените повторяющееся значение в поле "код элемента".',
+            'Пожалуйста, измените повторяющееся значение в поле &quot;код элемента&quot;.',
         )
         self.assertEqual(self.v1.elements.count(), 1)
