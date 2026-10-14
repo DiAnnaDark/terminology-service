@@ -42,7 +42,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/QueryError'
+                $ref: '#/components/schemas/DateQueryError'
           description: ''
   /refbooks/{id}/check_element:
     get:
@@ -173,6 +173,15 @@ components:
           type: boolean
       required:
       - valid
+    DateQueryError:
+      type: object
+      properties:
+        date:
+          type: array
+          items:
+            type: string
+      required:
+      - date
     Element:
       type: object
       properties:
